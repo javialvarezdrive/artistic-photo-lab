@@ -1,0 +1,7 @@
+{
+  "name": "Aristic Photo Lab G3",
+  "description": "A virtual director of photography for fashion designers. Visualize flat designs on realistic models using Gemini AI.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
