@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, GenerateContentResponse, SafetySetting, HarmCategory, HarmBlockThreshold } from "@google/genai";
-import { GenerationConfig, ShotType } from "../types";
+import { GenerationConfig, ShotType, ModelAge } from "../types";
 import { colorPalettes } from "../data/palettes";
 import { photoStudioPrompt, photoStudioNegativePrompt } from "../data/prompts";
 
@@ -47,6 +47,19 @@ const bloqueEncuadre = (shotType: ShotType): string => {
   }
 };
 
+const bloqueEdad = (age: ModelAge): string => {
+  if (!age || age === ModelAge.Original) return "";
+  let ageDescription = "";
+  switch (age) {
+    case ModelAge.Child: ageDescription = "6-9 year old child"; break;
+    case ModelAge.PreTeen: ageDescription = "10-12 year old pre-teen"; break;
+    case ModelAge.Teen: ageDescription = "13-16 year old teenager"; break;
+    case ModelAge.YoungAdult: ageDescription = "18-25 year old young adult"; break;
+    case ModelAge.Adult: ageDescription = "25+ year old adult"; break;
+  }
+  return `**MODEL AGE TRANSFORMATION:** The model MUST appear as a ${ageDescription}. Adjust facial features and body proportions accordingly while maintaining the base identity from the reference image.`;
+};
+
 const bloquePrenda = (longSleeves: boolean, garmentImgIndex: number, modelImgIndex: number): string => {
   let instrucciones = `
 **WARDROBE TRANSFORMATION - MANDATORY PROTOCOL:**
@@ -66,7 +79,7 @@ const bloqueColor = (paletteId: string): string => {
   if (!paletteId || paletteId === 'none') return "";
   const palette = colorPalettes.find(p => p.id === paletteId);
   if (!palette || palette.colors.length === 0) return "";
-  return `**COLOR OVERLAY:** Adjust the final image to match this color story: [${palette.colors.join(', ')}].`;
+  return `**MANDATORY COLOR PALETTE:** The final image MUST strictly adhere to this color story: [${palette.colors.join(', ')}]. Apply these tones to the clothing, lighting, and environment accents.`;
 };
 
 const procesarRespuesta = (response: GenerateContentResponse): string => {
@@ -162,15 +175,18 @@ ${config.background}
 4. **INTEGRATION:** Ensure lighting from the new environment matches the subject.
 5. **RENDER:** Photorealistic finish. Shot: ${bloqueEncuadre(config.shotType)}.
 
+${bloqueEdad(config.age)}
 ${bloquePrenda(config.longSleeves, garmentIndex, modelIndex)}
 ${bloqueColor(config.colorPalette)}
 
-${config.customPrompt ? `**STYLE NOTE:** ${config.customPrompt}` : ''}
+**DIRECTOR'S EXTRA INSTRUCTIONS (CRITICAL PRIORITY):**
+${config.customPrompt ? config.customPrompt : 'None.'}
 
 **FINAL VALIDATION:**
 - Is the background EXACTLY as described in TARGET ENVIRONMENT?
-- Is the person the model from Image ${modelIndex}?
-- Is the clothing the garment from Image ${garmentIndex}?`;
+- Is the person the model from Image ${modelIndex} with the requested age?
+- Is the clothing the garment from Image ${garmentIndex}?
+- Are the DIRECTOR'S EXTRA INSTRUCTIONS fully implemented?`;
 
     parts.push({ text: prompt });
 
