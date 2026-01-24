@@ -188,10 +188,6 @@ ${bloquePrenda(config.longSleeves, garmentIndex, modelIndex)}
 - Is the person the model from Image ${modelIndex}?
 - Is the clothing the garment from Image ${garmentIndex}?`;
 
-    console.log("--- PROMPT START ---");
-    console.log(prompt);
-    console.log("--- PROMPT END ---");
-
     parts.push({ text: prompt });
 
     const response = await ai.models.generateContent({
