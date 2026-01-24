@@ -78,8 +78,8 @@ const bloquePrenda = (longSleeves: boolean, garmentImgIndex: number, modelImgInd
 const bloqueColor = (paletteId: string): string => {
   if (!paletteId || paletteId === 'none') return "";
   const palette = colorPalettes.find(p => p.id === paletteId);
-  if (!palette || palette.colors.length === 0) return "";
-  return `**MANDATORY COLOR PALETTE:** The final image MUST strictly adhere to this color story: [${palette.colors.join(', ')}]. Apply these tones to the clothing, lighting, and environment accents.`;
+  if (!palette || palette.colors.length === 0) return "Original colors from references.";
+  return `STRICTLY USE THIS PALETTE: [${palette.colors.join(', ')}]. Apply these tones everywhere.`;
 };
 
 const procesarRespuesta = (response: GenerateContentResponse): string => {
@@ -149,7 +149,12 @@ export const generateFashionImage = async (config: GenerationConfig): Promise<st
 
 
     // CONSTRUCTION OF THE STRUCTURED PROMPT
-    let prompt = `**TASK:** VIRTUAL TRY-ON (STRICT REPLACEMENT).
+    let prompt = `**URGENT DIRECTOR DIRECTIVES (HIGHEST PRIORITY):**
+1. **EXTRA INSTRUCTIONS:** ${config.customPrompt || 'Follow default style.'}
+2. **COLOR CONSTRAINT:** ${bloqueColor(config.colorPalette)}
+3. **AGE TRANSFORMATION:** ${bloqueEdad(config.age) || 'Maintain original age.'}
+
+**TASK:** VIRTUAL TRY-ON (STRICT REPLACEMENT).
 **GOAL:** Transfer the garment from Image ${garmentIndex} onto the person in Image ${modelIndex}.
 
 **TARGET ENVIRONMENT / BACKGROUND:**
@@ -175,18 +180,17 @@ ${config.background}
 4. **INTEGRATION:** Ensure lighting from the new environment matches the subject.
 5. **RENDER:** Photorealistic finish. Shot: ${bloqueEncuadre(config.shotType)}.
 
-${bloqueEdad(config.age)}
 ${bloquePrenda(config.longSleeves, garmentIndex, modelIndex)}
-${bloqueColor(config.colorPalette)}
-
-**DIRECTOR'S EXTRA INSTRUCTIONS (CRITICAL PRIORITY):**
-${config.customPrompt ? config.customPrompt : 'None.'}
 
 **FINAL VALIDATION:**
+- Are ALL "URGENT DIRECTOR DIRECTIVES" from the top of this prompt fully implemented?
 - Is the background EXACTLY as described in TARGET ENVIRONMENT?
-- Is the person the model from Image ${modelIndex} with the requested age?
-- Is the clothing the garment from Image ${garmentIndex}?
-- Are the DIRECTOR'S EXTRA INSTRUCTIONS fully implemented?`;
+- Is the person the model from Image ${modelIndex}?
+- Is the clothing the garment from Image ${garmentIndex}?`;
+
+    console.log("--- PROMPT START ---");
+    console.log(prompt);
+    console.log("--- PROMPT END ---");
 
     parts.push({ text: prompt });
 
