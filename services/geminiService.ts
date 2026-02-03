@@ -62,14 +62,15 @@ const bloqueEdad = (age: ModelAge): string => {
 
 const bloquePrenda = (longSleeves: boolean, garmentImgIndex: number, modelImgIndex: number): string => {
   let instrucciones = `
-**WARDROBE TRANSFORMATION - MANDATORY PROTOCOL:**
-1. **SOURCE OF TRUTH:** Use Image ${garmentImgIndex} as the ONLY source for the clothing. Replicate its exact pattern, fabric texture, and decorative elements (logos/graphics).
-2. **REPLACEMENT:** You MUST remove any existing clothing from the person in Image ${modelImgIndex > 0 ? modelImgIndex : 'the scene'} and replace it entirely with the garment from Image ${garmentImgIndex}.
-3. **FIT & ANATOMY:** The garment must have a **PERFECT FIT**, adapting flawlessy to the model's anatomy (skin-tight if it's athletic wear). Ensure it follows the pose structure exactly.
+**CLOTHING TRANSFER PROTOCOL:**
+1. **SOURCE:** The swimsuit/maillot worn by the person in Image ${garmentImgIndex}.
+2. **TARGET:** The person in Image ${modelImgIndex > 0 ? modelImgIndex : 'the scene'} - this person must wear the swimsuit from Image ${garmentImgIndex}.
+3. **ACCURACY:** The transferred swimsuit must be IDENTICAL to the one in Image ${garmentImgIndex} - same colors, pattern, cut, logos.
+4. **FIT:** The swimsuit must fit the target person's body naturally, following their pose and anatomy.
   `;
 
   if (longSleeves) {
-    instrucciones += `\n4. **MODIFICATION:** Extend the design to create long sleeves that reach the wrists, maintaining the original pattern style.`;
+    instrucciones += `\n5. **MODIFICATION:** Extend the design to create long sleeves that reach the wrists, maintaining the original pattern style.`;
   }
 
   return instrucciones;
@@ -148,45 +149,83 @@ export const generateFashionImage = async (config: GenerationConfig): Promise<st
 
 
 
-    // CONSTRUCTION OF THE STRUCTURED PROMPT
-    let prompt = `**URGENT DIRECTOR DIRECTIVES (HIGHEST PRIORITY):**
-1. **EXTRA INSTRUCTIONS:** ${config.customPrompt || 'Follow default style.'}
-2. **COLOR CONSTRAINT:** ${bloqueColor(config.colorPalette)}
-3. **AGE TRANSFORMATION:** ${bloqueEdad(config.age) || 'Maintain original age.'}
+    // CONSTRUCTION OF THE STRUCTURED PROMPT - CLOTHES TRANSFER
+    let prompt = `
+##############################################################################
+#                    🔴 MISSION-CRITICAL INSTRUCTION 🔴                       #
+##############################################################################
 
-**TASK:** VIRTUAL TRY-ON (STRICT REPLACEMENT).
-**GOAL:** Transfer the garment from Image ${garmentIndex} onto the person in Image ${modelIndex}.
+You are performing a **CLOTHING TRANSFER** operation.
 
-**TARGET ENVIRONMENT / BACKGROUND:**
+**THE MISSION:**
+Look at Image ${garmentIndex}. There is a person wearing a SWIMSUIT/MAILLOT.
+Your job is to:
+1. COPY that EXACT swimsuit/maillot (the clothing, NOT the person)
+2. PUT that swimsuit/maillot on the person from Image ${modelIndex}
+
+**RESULT:** The person from Image ${modelIndex} must be wearing the SAME swimsuit/maillot that the person in Image ${garmentIndex} is wearing.
+
+---
+
+**IMAGE ${garmentIndex} - CLOTHING SOURCE:**
+- This image shows a person wearing a swimsuit/maillot
+- **EXTRACT:** The swimsuit/maillot this person is wearing (pattern, colors, design, logos, fabric)
+- **IGNORE:** The person's body/face in this image (we only need their clothes)
+
+**IMAGE ${modelIndex} - BODY/FACE SOURCE:**
+- This is the person who will wear the clothing
+- **KEEP:** This person's face, hair, body shape, and pose
+- **REMOVE:** Whatever clothes this person is currently wearing
+- **REPLACE:** Dress this person with the swimsuit from Image ${garmentIndex}
+
+---
+
+**STEP-BY-STEP GENERATION:**
+
+1. **ANALYZE Image ${garmentIndex}:** Identify the swimsuit/maillot being worn. Note its:
+   - Color(s)
+   - Pattern (stripes, logos, graphics, solid)
+   - Cut/style (neckline, straps, leg cut)
+   - Material appearance (glossy, matte)
+
+2. **ANALYZE Image ${modelIndex}:** Identify the person. Note their:
+   - Face and hair
+   - Body proportions
+   - Pose and position
+
+3. **GENERATE:** Create Image ${modelIndex}'s person wearing Image ${garmentIndex}'s swimsuit/maillot:
+   - Face = from Image ${modelIndex}
+   - Body = from Image ${modelIndex}
+   - Pose = from Image ${modelIndex}
+   - **SWIMSUIT = EXACTLY from Image ${garmentIndex}** ⬅️ THIS IS THE KEY
+
+${bloquePrenda(config.longSleeves, garmentIndex, modelIndex)}
+
+---
+
+**ENVIRONMENT:**
 """
 ${config.background}
 """
 
-**SOURCE 1: THE GARMENT (Image ${garmentIndex})**
-- **ROLE:** TEXTURE & DESIGN SOURCE.
-- **ACTION:** Extract this EXACT garment (cut, pattern, fabric).
-- **CONSTRAINT:** Ignore the model/dummy inside this image.
+**ADDITIONAL SETTINGS:**
+- Shot type: ${bloqueEncuadre(config.shotType)}
+- Extra instructions: ${config.customPrompt || 'None'}
+- Color adjustment: ${bloqueColor(config.colorPalette) || 'Keep original colors'}
+- Age: ${bloqueEdad(config.age) || 'As shown in reference'}
 
-**SOURCE 2: THE TARGET MODEL (Image ${modelIndex})**
-- **ROLE:** ANATOMY & POSE SOURCE.
-- **ACTION:** Retain the face, hair, body shape, and EXACT pose.
-- **CRITICAL CONSTRAINT:** **REMOVE** the original background from this image.
-- **CRITICAL CONSTRAINT:** **DELETE** the clothing this person is wearing.
+**QUALITY:** Hyperrealistic, 8K detail, natural skin texture, realistic fabric rendering.
 
-**GENERATION INSTRUCTIONS:**
-1. **SCENE:** GENERATE the following background strictly: "${config.background}". REPLACE the original background.
-2. **SUBJECT:** Place the model from Source 2 into this new environment.
-3. **CLOTHING:** Dress the model with the garment from Source 1.
-4. **INTEGRATION:** Ensure lighting from the new environment matches the subject.
-5. **RENDER:** Photorealistic finish. Shot: ${bloqueEncuadre(config.shotType)}.
+##############################################################################
+#                         ✅ BEFORE YOU OUTPUT, CHECK:                        #
+##############################################################################
 
-${bloquePrenda(config.longSleeves, garmentIndex, modelIndex)}
+1. Is the FACE from Image ${modelIndex}? ✓
+2. Is the BODY from Image ${modelIndex}? ✓
+3. Is the SWIMSUIT/MAILLOT from Image ${garmentIndex}? ✓ (THIS IS MANDATORY)
+4. Does the swimsuit match EXACTLY (same pattern, colors, design)? ✓
 
-**FINAL VALIDATION:**
-- Are ALL "URGENT DIRECTOR DIRECTIVES" from the top of this prompt fully implemented?
-- Is the background EXACTLY as described in TARGET ENVIRONMENT?
-- Is the person the model from Image ${modelIndex}?
-- Is the clothing the garment from Image ${garmentIndex}?`;
+🚨 IF THE SWIMSUIT DOES NOT MATCH IMAGE ${garmentIndex}, YOU HAVE FAILED. REGENERATE.`;
 
     parts.push({ text: prompt });
 

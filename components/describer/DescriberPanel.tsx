@@ -29,8 +29,8 @@ export const DescriberPanel: React.FC<DescriberPanelProps> = ({ onOpenCamera }) 
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-full">
             {/* Controls */}
             <div className="w-full lg:w-1/3 p-6 space-y-6 border-r border-slate-800 overflow-y-auto bg-slate-950">
-                <div className="bg-slate-900 p-6 rounded-xl border border-slate-800">
-                    <h2 className="text-xl font-bold mb-4 text-white">Análisis Técnico</h2>
+                <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
+                    <h2 className="text-xl font-bold mb-4 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Análisis Técnico</h2>
                     <ImageUploader
                         label="Sube una imagen para analizar"
                         placeholderText="Sube cualquier referencia"
@@ -41,7 +41,8 @@ export const DescriberPanel: React.FC<DescriberPanelProps> = ({ onOpenCamera }) 
                     <button
                         onClick={handleDescribe}
                         disabled={isDescribing || !describerImg}
-                        className="mt-4 w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+                        className={`mt-4 w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 btn-premium disabled:opacity-50 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed
+                            ${describerImg && !isDescribing ? 'animate-glow shadow-lg' : ''}`}
                     >
                         {isDescribing ? <RefreshCw className="w-5 h-5 animate-spin" /> : "Analizar Imagen"}
                     </button>
@@ -50,12 +51,12 @@ export const DescriberPanel: React.FC<DescriberPanelProps> = ({ onOpenCamera }) 
 
             {/* Results */}
             <div className="flex-1 overflow-y-auto p-8 bg-slate-900">
-                <div className="max-w-3xl mx-auto bg-slate-950 border border-slate-800 rounded-xl p-8 shadow-lg">
+                <div className="max-w-3xl mx-auto bg-slate-950/80 border border-slate-800 rounded-2xl p-8 shadow-xl backdrop-blur">
                     <h3 className="text-xl font-serif font-bold text-emerald-400 mb-6 flex items-center gap-2">
                         <Layers className="w-5 h-5" /> Informe de Análisis
                     </h3>
                     {description ? (
-                        <div className="prose prose-invert max-w-none">
+                        <div className="prose prose-invert max-w-none animate-fadeInUp">
                             <div className="whitespace-pre-wrap text-slate-300 leading-relaxed font-light">
                                 {description}
                             </div>

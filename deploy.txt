@@ -1,0 +1,8 @@
+cd "C:\Users\javie\OneDrive\Escritorio\artistic photo lab"
+
+npm run deploy
+
+
+la url es https://photo-lab-17539.web.app
+
+

@@ -92,7 +92,7 @@ export const GalleryPanel: React.FC<GalleryPanelProps> = ({ onExternalUpload, on
             </div>
 
             {/* Control Bar */}
-            <div className="shrink-0 bg-slate-900 border-t border-slate-800 p-4 flex flex-col gap-4 z-20">
+            <div className="shrink-0 glass border-t border-slate-700/50 p-4 flex flex-col gap-4 z-20">
 
                 {/* Refinement Input */}
                 <div className="flex gap-2 max-w-4xl mx-auto w-full">
@@ -103,12 +103,12 @@ export const GalleryPanel: React.FC<GalleryPanelProps> = ({ onExternalUpload, on
                             onChange={(e) => setRefinePrompt(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleRefine()}
                             placeholder="Escribe aquí para editar la imagen actual..."
-                            className="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-full py-3 pl-5 pr-12 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all placeholder-slate-500"
+                            className="w-full bg-slate-800/80 border border-slate-700 text-white text-sm rounded-xl py-3.5 pl-5 pr-14 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 outline-none transition-all placeholder-slate-500 hover:bg-slate-800"
                         />
                         <button
                             onClick={handleRefine}
                             disabled={isRefining || !refinePrompt}
-                            className="absolute right-1 top-1 bottom-1 p-2 bg-slate-700 hover:bg-emerald-600 rounded-full text-white disabled:opacity-50 disabled:bg-transparent transition-colors"
+                            className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2.5 bg-slate-700 hover:bg-emerald-600 rounded-lg text-white disabled:opacity-30 disabled:bg-transparent transition-all hover:scale-105"
                         >
                             {isRefining ? <RefreshCw className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
                         </button>
@@ -119,17 +119,20 @@ export const GalleryPanel: React.FC<GalleryPanelProps> = ({ onExternalUpload, on
                 <div className="flex gap-2 overflow-x-auto pb-1 justify-center custom-scrollbar min-h-[60px] items-center">
                     <button
                         onClick={onExternalUpload}
-                        className="w-12 h-12 rounded-md border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-500 hover:text-emerald-500 hover:border-emerald-500 hover:bg-emerald-900/10 transition-all shrink-0"
+                        className="w-14 h-14 rounded-xl border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-500 hover:text-emerald-400 hover:border-emerald-500 hover:bg-emerald-900/20 transition-all duration-300 shrink-0 hover:scale-105"
                         title="Subir imagen externa para editar"
                     >
                         <Plus className="w-5 h-5" />
                     </button>
 
-                    {gallery.images.map(img => (
+                    {gallery.images.map((img, index) => (
                         <button
                             key={img.id}
                             onClick={() => gallery.setSelectedId(img.id)}
-                            className={`relative w-12 h-12 rounded-md overflow-hidden border-2 transition-all shrink-0 group ${gallery.selectedId === img.id ? 'border-emerald-500 ring-2 ring-emerald-500/20 scale-110 z-10' : 'border-slate-700 opacity-60 hover:opacity-100 hover:scale-105'}`}
+                            className={`relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all duration-300 shrink-0 group ${gallery.selectedId === img.id
+                                ? 'border-emerald-500 ring-2 ring-emerald-500/30 scale-110 z-10 shadow-lg shadow-emerald-500/20'
+                                : 'border-slate-700 opacity-70 hover:opacity-100 hover:scale-105 hover:border-slate-500'}`}
+                            style={{ animationDelay: `${index * 50}ms` }}
                         >
                             <img src={img.url} className="w-full h-full object-cover" alt="thumbnail" />
                         </button>

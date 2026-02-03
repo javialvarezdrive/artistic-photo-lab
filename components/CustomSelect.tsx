@@ -42,7 +42,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         <button
           type="button"
           onClick={toggle}
-          className={`w-full flex items-center justify-between bg-slate-700/50 border border-slate-600 rounded-lg py-3 px-4 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 transition-all hover:bg-slate-700 ${isOpen ? 'ring-1 ring-cyan-500 border-cyan-500' : ''}`}
+          className={`w-full flex items-center justify-between bg-slate-700/50 border border-slate-600 rounded-xl py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all hover:bg-slate-700 hover:border-slate-500 ${isOpen ? 'ring-2 ring-emerald-500/50 border-emerald-500' : ''}`}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
         >
@@ -55,16 +55,16 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         </button>
 
         {isOpen && (
-          <div className="absolute z-20 w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg shadow-xl max-h-60 overflow-auto custom-scrollbar animate-in fade-in zoom-in-95 duration-100">
+          <div className="absolute z-20 w-full mt-1 bg-slate-800 border border-slate-600 rounded-xl shadow-xl max-h-60 overflow-auto custom-scrollbar animate-fadeInUp">
             {options.map((option) => {
               const isSelected = value === option.value;
               return (
                 <button
                   key={option.value}
                   onClick={() => handleSelect(option.value)}
-                  className={`w-full flex items-center justify-between px-4 py-3 text-sm text-left transition-colors border-b border-slate-700 last:border-0
+                  className={`w-full flex items-center justify-between px-4 py-3 text-sm text-left transition-all border-b border-slate-700 last:border-0
                     ${isSelected
-                      ? 'bg-cyan-600 text-white font-medium'
+                      ? 'bg-emerald-600 text-white font-medium'
                       : 'text-slate-300 hover:bg-slate-700 hover:text-white'
                     }`}
                 >

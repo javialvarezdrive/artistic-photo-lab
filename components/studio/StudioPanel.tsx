@@ -150,15 +150,19 @@ export const StudioPanel: React.FC<StudioPanelProps> = ({ onOpenCamera, onOpenSa
             <button
                 onClick={handleGenerate}
                 disabled={isGenerating || !studio.canGenerate}
-                className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:from-slate-800 disabled:to-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-lg shadow-lg transition-all flex items-center justify-center gap-2"
+                className={`w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:from-slate-800 disabled:to-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 btn-premium relative overflow-hidden
+                    ${studio.canGenerate && !isGenerating ? 'animate-glow hover:shadow-emerald-500/30 hover:shadow-xl' : ''}`}
             >
                 {isGenerating ? (
                     <>
-                        <RefreshCw className="w-5 h-5 animate-spin" /> Creando Magia...
+                        <RefreshCw className="w-5 h-5 animate-spin" />
+                        <span className="relative z-10">Creando Magia...</span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
                     </>
                 ) : (
                     <>
-                        <Wand2 className="w-5 h-5" /> Generar Fotografía
+                        <Wand2 className="w-5 h-5" />
+                        <span className="relative z-10">Generar Fotografía</span>
                     </>
                 )}
             </button>

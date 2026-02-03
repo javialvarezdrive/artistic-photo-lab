@@ -14,7 +14,7 @@ const defaultConfig: GenerationConfig = {
     age: ModelAge.Original,
     background: PREDEFINED_BACKGROUNDS[0].value,
     aspectRatio: AspectRatio.Portrait_9_16,
-    imageSize: ImageSize.Size_1K,
+    imageSize: ImageSize.Size_4K,
     colorPalette: colorPalettes[0].id,
     longSleeves: false,
     shotType: ShotType.FullBody,
